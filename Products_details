@@ -1,0 +1,136 @@
+import json
+
+# Initialize the product database
+PRODUCT_FILE = "products.json"
+
+# Load existing products from file
+def load_products():
+    try:
+        with open(PRODUCT_FILE, "r") as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return {}
+
+# Save products to file
+def save_products(products):
+    with open(PRODUCT_FILE, "w") as file:
+        json.dump(products, file, indent=4)
+
+# Add a new product
+def add_product(products):
+    name = input("Enter product name: ").strip()
+    if name in products:
+        print(f"Product '{name}' already exists.")
+        return
+
+    try:
+        count = int(input("Enter product count: "))
+        price = float(input("Enter product price: "))
+        category = input("Enter product category: ").strip()
+        description = input("Enter product description: ").strip()
+
+        products[name] = {
+            "count": count,
+            "price": price,
+            "category": category,
+            "description": description,
+        }
+        print(f"Product '{name}' added successfully!")
+    except ValueError:
+        print("Invalid input. Count should be an integer and price should be a float.")
+
+# View all products
+def view_products(products):
+    if not products:
+        print("No products available.")
+        return
+
+    print(f"{'Name':<15}{'Count':<10}{'Price':<10}{'Category':<15}{'Description'}")
+    print("-" * 60)
+    for name, details in products.items():
+        print(
+            f"{name:<15}{details['count']:<10}{details['price']:<10}{details['category']:<15}{details['description']}"
+        )
+
+# Search for a product by name
+def search_product(products):
+    name = input("Enter the product name to search: ").strip()
+    if name in products:
+        details = products[name]
+        print(f"Name: {name}")
+        print(f"Count: {details['count']}")
+        print(f"Price: {details['price']}")
+        print(f"Category: {details['category']}")
+        print(f"Description: {details['description']}")
+    else:
+        print(f"Product '{name}' not found.")
+
+# Update product details
+def update_product(products):
+    name = input("Enter the product name to update: ").strip()
+    if name in products:
+        details = products[name]
+        print("Leave the field empty if you don't want to update it.")
+        new_count = input(f"Enter new count (current: {details['count']}): ").strip()
+        new_price = input(f"Enter new price (current: {details['price']}): ").strip()
+        new_category = input(f"Enter new category (current: {details['category']}): ").strip()
+        new_description = input(f"Enter new description (current: {details['description']}): ").strip()
+
+        if new_count:
+            details['count'] = int(new_count)
+        if new_price:
+            details['price'] = float(new_price)
+        if new_category:
+            details['category'] = new_category
+        if new_description:
+            details['description'] = new_description
+
+        print(f"Product '{name}' updated successfully!")
+    else:
+        print(f"Product '{name}' not found.")
+
+# Delete a product
+def delete_product(products):
+    name = input("Enter the product name to delete: ").strip()
+    if name in products:
+        del products[name]
+        print(f"Product '{name}' deleted successfully!")
+    else:
+        print(f"Product '{name}' not found.")
+
+# Main menu
+def main():
+    print("Welcome to the Product Notebook!")
+    products = load_products()
+
+    while True:
+        print("\nMenu:")
+        print("1. Add Product")
+        print("2. View All Products")
+        print("3. Search Product")
+        print("4. Update Product")
+        print("5. Delete Product")
+        print("6. Exit")
+
+        choice = input("Enter your choice (1-6): ").strip()
+
+        if choice == "1":
+            add_product(products)
+        elif choice == "2":
+            view_products(products)
+        elif choice == "3":
+            search_product(products)
+        elif choice == "4":
+            update_product(products)
+        elif choice == "5":
+            delete_product(products)
+        elif choice == "6":
+            save_products(products)
+            print("Exiting the program. Goodbye!")
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+# Run the program
+if __name__ == "__main__":
+    main()
